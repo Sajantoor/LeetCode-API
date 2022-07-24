@@ -19,7 +19,7 @@ public class LeetcodeController {
 
     // GET Leetcode questions
     @GetMapping("/questions")
-    public ResponseEntity<String> getQuestions() {
+    public ResponseEntity<Object> getQuestions() {
         return leetcodeService.getQuestions();
     }
 
