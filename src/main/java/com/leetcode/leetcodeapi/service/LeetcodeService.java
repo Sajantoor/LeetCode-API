@@ -1,58 +1,62 @@
 package com.leetcode.leetcodeapi.service;
 
+import org.apache.http.client.methods.CloseableHttpResponse;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.impl.client.HttpClients;
+import org.apache.http.util.EntityUtils;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import org.apache.http.HttpEntity;
+import org.apache.http.client.config.CookieSpecs;
+import org.apache.http.client.config.RequestConfig;
+
 import java.io.IOException;
-import java.net.URI;
-import java.net.http.HttpClient;
-import java.net.http.HttpRequest;
-import java.net.http.HttpResponse;
-import java.net.http.HttpResponse.BodyHandlers;
 
 @Service
 public class LeetcodeService {
     private final String PROBLEM_API = "https://leetcode.com/api/problems/algorithms/";
+    private final String GRAPHQL_API = "https://leetcode.com/graphql";
 
-    private HttpClient client;
+    private CloseableHttpClient client;
+    private ObjectMapper mapper;
 
     public LeetcodeService() {
-        this.client = HttpClient.newHttpClient();
+        client = HttpClients.custom()
+                .setDefaultRequestConfig(RequestConfig.custom()
+                        .setCookieSpec(CookieSpecs.STANDARD).build())
+                .build();
+        this.mapper = new ObjectMapper();
     }
 
     public ResponseEntity<Object> getQuestions() {
-        URI uri = URI.create(PROBLEM_API);
-        HttpRequest request = HttpRequest.newBuilder().GET().uri(uri).build();
-        HttpResponse<String> response;
+        HttpGet request = new HttpGet(PROBLEM_API);
 
-        try {
-            response = client.send(request, BodyHandlers.ofString());
-        } catch (IOException | InterruptedException e) {
-            e.printStackTrace();
+        try (CloseableHttpResponse response = client.execute(request)) {
+            int statusCode = response.getStatusLine().getStatusCode();
+
+            if (statusCode != 200) {
+                String message = response.getStatusLine().getReasonPhrase();
+                return new ResponseEntity<Object>(message, HttpStatus.valueOf(statusCode));
+            }
+
+            HttpEntity entity = response.getEntity();
+            String body = EntityUtils.toString(entity);
+            JsonNode output = mapper.readTree(body);
+
+            return new ResponseEntity<>(output, HttpStatus.OK);
+        } catch (UnsupportedOperationException | IOException e) {
             return new ResponseEntity<>(HttpStatus.SERVICE_UNAVAILABLE);
         }
-
-        HttpStatus statusCode = HttpStatus.valueOf(response.statusCode());
-
-        ObjectMapper mapper = new ObjectMapper();
-        JsonNode output;
-
-        try {
-            output = mapper.readTree(response.body());
-        } catch (JsonProcessingException e) {
-            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
-        }
-
-        return new ResponseEntity<Object>(output, statusCode);
     }
 
-    public ResponseEntity<String> getQuestionById(String id) {
-        return ResponseEntity.ok("getQuestionById " + id);
+    public ResponseEntity<String> getQuestionByName(String name) {
+        return ResponseEntity.ok("getQuestionById " + name);
     }
 
     public ResponseEntity<String> getQuestionByCategory(String category) {

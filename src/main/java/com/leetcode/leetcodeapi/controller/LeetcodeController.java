@@ -26,7 +26,7 @@ public class LeetcodeController {
     // GET Leetcode question by id
     @GetMapping("/questions/{id}")
     public ResponseEntity<String> getQuestionById(@PathVariable String id) {
-        return leetcodeService.getQuestionById(id);
+        return leetcodeService.getQuestionByName(id);
     }
 
     // GET Leetcode Question by category
