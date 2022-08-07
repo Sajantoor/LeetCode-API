@@ -2,6 +2,9 @@ package com.leetcode.leetcodeapi.utilities;
 
 import java.util.Map;
 
+import org.apache.http.entity.StringEntity;
+import org.apache.http.entity.ContentType;
+
 public class GraphQlQuery {
     private String query;
     private Map<String, String> variables;
@@ -41,10 +44,19 @@ public class GraphQlQuery {
 
         StringBuilder variables = new StringBuilder();
 
-        for (Map.Entry<String, String> entry : this.variables.entrySet()) {
-            variables.append(String.format("\"%s\": \"%s\"", entry.getKey(), entry.getValue()));
+        // TODO: Probably a better way to do this
+        for (Map.Entry<String, String> variable : this.variables.entrySet()) {
+            variables.append(String.format("\"%s\": \"%s\"", variable.getKey(), variable.getValue()));
+            // append comma if not last entry in map
+            if (variable.getKey() != this.variables.keySet().toArray()[this.variables.keySet().size() - 1]) {
+                variables.append(", ");
+            }
         }
 
         return String.format("{\n \"query\": \"%s\",\n  \"variables\": {\n %s \n}\n}", query, variables);
+    }
+
+    public StringEntity getEntity() {
+        return new StringEntity(this.toString(), ContentType.APPLICATION_JSON);
     }
 }

@@ -31,8 +31,8 @@ public class LeetcodeController {
 
     // GET Leetcode Question by category
     @GetMapping("/questions/category/{category}")
-    public ResponseEntity<String> getQuestionByCategory(@PathVariable String category) {
-        return leetcodeService.getQuestionByCategory(category);
+    public ResponseEntity<Object> getQuestionByCategory(@PathVariable String category) {
+        return leetcodeService.getQuestionsByCategory(category);
     }
 
     // Submit leetcode question answer
