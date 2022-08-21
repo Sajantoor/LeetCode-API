@@ -6,8 +6,10 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 
+import com.leetcode.leetcodeapi.models.SubmissionBody;
 import com.leetcode.leetcodeapi.service.LeetcodeService;
 
 @Controller
@@ -36,8 +38,13 @@ public class LeetcodeController {
     }
 
     // Submit leetcode question answer
-    @PostMapping("/questions/{id}/submit")
-    public ResponseEntity<String> submit(@PathVariable String id) {
-        return leetcodeService.submit(id);
+    @PostMapping("/questions/{name}/submit")
+    public ResponseEntity<Object> submit(@PathVariable String name, @RequestBody SubmissionBody submissionBody) {
+        return leetcodeService.submit(name, submissionBody);
+    }
+
+    @GetMapping("/questions/submissions/{id}")
+    public ResponseEntity<Object> submit(@PathVariable String id) {
+        return leetcodeService.getSubmissions(id);
     }
 }

@@ -10,6 +10,7 @@ import org.apache.http.util.EntityUtils;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.server.ResponseStatusException;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -27,6 +28,10 @@ public class HttpRequestUtils {
             int statusCode = response.getStatusLine().getStatusCode();
 
             if (statusCode != 200) {
+                if (statusCode == 499) {
+                    throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Bad Request (499)");
+                }
+
                 HttpStatus status = HttpStatus.valueOf(statusCode);
                 String message = response.getStatusLine().getReasonPhrase();
                 throw new ResponseStatusException(status, message);
@@ -48,5 +53,10 @@ public class HttpRequestUtils {
         HttpEntity entity = response.getEntity();
         String body = EntityUtils.toString(entity);
         return mapper.readTree(body);
+    }
+
+    public static String convertModelToJsonString(Object model) throws JsonProcessingException {
+        ObjectMapper mapper = new ObjectMapper();
+        return mapper.writeValueAsString(model);
     }
 }
