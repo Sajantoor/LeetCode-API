@@ -25,10 +25,15 @@ public class LeetcodeController {
         return leetcodeService.getQuestions();
     }
 
-    // GET Leetcode question by id
-    @GetMapping("/questions/{id}")
-    public ResponseEntity<Object> getQuestionById(@PathVariable String id) {
-        return leetcodeService.getQuestionByName(id);
+    // GET Leetcode question by name
+    @GetMapping("/questions/{name}")
+    public ResponseEntity<Object> getQuestionById(@PathVariable String name) {
+        return leetcodeService.getQuestionByName(name);
+    }
+
+    @GetMapping("/questions/random")
+    public ResponseEntity<Object> getRandomQuestion() {
+        return leetcodeService.getRandomQuestion();
     }
 
     // GET Leetcode Question by category
@@ -43,6 +48,7 @@ public class LeetcodeController {
         return leetcodeService.submit(name, submissionBody);
     }
 
+    // Get leetcode question submission details
     @GetMapping("/questions/submissions/{id}")
     public ResponseEntity<Object> submit(@PathVariable String id) {
         return leetcodeService.getSubmissions(id);

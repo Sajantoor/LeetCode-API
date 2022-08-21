@@ -50,6 +50,15 @@ public class LeetcodeService {
         return getQuestionsByCategory("all");
     }
 
+    public ResponseEntity<Object> getRandomQuestion() {
+        JsonNode questions = getQuestionByCategory("all");
+        int totalQuestions = questions.get("num_total").asInt();
+        int randomIndex = (int) (Math.random() * totalQuestions);
+        String randomQueston = questions.get("stat_status_pairs").get(randomIndex).get("stat")
+                .get("question__title_slug").asText();
+        return getQuestionByName(randomQueston);
+    }
+
     public ResponseEntity<Object> getQuestionByName(String name) {
 
         String query = """
@@ -83,8 +92,7 @@ public class LeetcodeService {
         }
     }
 
-    // TOOD:: add difficulty and category
-    public ResponseEntity<Object> getQuestionsByCategory(String category) {
+    private JsonNode getQuestionByCategory(String category) {
         if (!isValidCategory(category)) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid Category");
         }
@@ -94,11 +102,17 @@ public class LeetcodeService {
 
         try (CloseableHttpResponse response = HttpRequestUtils.makeHttpRequest(request, client)) {
             JsonNode json = HttpRequestUtils.getJsonFromBody(response);
-            return ResponseEntity.ok(json);
+            return json;
         } catch (IOException e) {
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR,
                     "Internal Server Error " + e.getMessage());
         }
+    }
+
+    // TOOD:: add difficulty and category
+    public ResponseEntity<Object> getQuestionsByCategory(String category) {
+        JsonNode json = getQuestionByCategory(category);
+        return ResponseEntity.ok(json);
     }
 
     public ResponseEntity<Object> submit(String name, SubmissionBody submissionBody) {
@@ -152,6 +166,7 @@ public class LeetcodeService {
             count++;
         }
 
+        // TODO: Add better message for user
         return new ResponseEntity<Object>(HttpStatus.OK);
     }
 
