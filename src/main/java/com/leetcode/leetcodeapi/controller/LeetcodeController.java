@@ -39,9 +39,19 @@ public class LeetcodeController {
 
     // GET Leetcode Question by category
     @GetMapping("/questions/category/{category}/difficulty/{difficulty}")
-    public ResponseEntity<Object> getQuestionByCategory(@PathVariable String category,
+    public ResponseEntity<Object> getQuestionByCategoryAndDifficulty(@PathVariable String category,
             @PathVariable String difficulty) {
         return leetcodeService.getQuestionsByCategory(category, difficulty);
+    }
+
+    @GetMapping("/questions/category/{category}")
+    public ResponseEntity<Object> getQuestionByCategory(@PathVariable String category) {
+        return leetcodeService.getQuestionsByCategory(category, "all");
+    }
+
+    @GetMapping("/questions/difficulty/{difficulty}")
+    public ResponseEntity<Object> getQuestionByDifficulty(@PathVariable String difficulty) {
+        return leetcodeService.getQuestionsByCategory("all", difficulty);
     }
 
     // Submit leetcode question answer
