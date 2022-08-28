@@ -31,15 +31,17 @@ public class LeetcodeController {
         return leetcodeService.getQuestionByName(name);
     }
 
+    // GET random Leetcode question
     @GetMapping("/questions/random")
     public ResponseEntity<Object> getRandomQuestion() {
         return leetcodeService.getRandomQuestion();
     }
 
     // GET Leetcode Question by category
-    @GetMapping("/questions/category/{category}")
-    public ResponseEntity<Object> getQuestionByCategory(@PathVariable String category) {
-        return leetcodeService.getQuestionsByCategory(category);
+    @GetMapping("/questions/category/{category}/difficulty/{difficulty}")
+    public ResponseEntity<Object> getQuestionByCategory(@PathVariable String category,
+            @PathVariable String difficulty) {
+        return leetcodeService.getQuestionsByCategory(category, difficulty);
     }
 
     // Submit leetcode question answer

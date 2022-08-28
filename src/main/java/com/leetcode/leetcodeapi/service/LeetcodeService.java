@@ -15,6 +15,7 @@ import org.springframework.web.server.ResponseStatusException;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
+import org.json.JSONObject;
 import com.leetcode.leetcodeapi.models.SubmissionBody;
 import com.leetcode.leetcodeapi.utilities.GraphQlQuery;
 import com.leetcode.leetcodeapi.utilities.HttpRequestUtils;
@@ -23,7 +24,6 @@ import org.apache.http.client.config.CookieSpecs;
 import org.apache.http.client.config.RequestConfig;
 
 import java.io.IOException;
-import java.util.HashMap;
 
 @Service
 public class LeetcodeService {
@@ -35,6 +35,7 @@ public class LeetcodeService {
     private final String SUBMISSION_DETAILS_API = "https://leetcode.com/submissions/detail/%s/check";
     // TODO: include difficulty and category
     private final String[] CATEGORIES = { "all", "algorithms", "database", "shell", "concurrency" };
+    private final String[] DIFFICULTIES = { "ALL", "EASY", "MEDIUM", "HARD" };
     private final int MAX_POLL_COUNT = 10;
 
     private CloseableHttpClient client;
@@ -47,11 +48,12 @@ public class LeetcodeService {
     }
 
     public ResponseEntity<Object> getQuestions() {
-        return getQuestionsByCategory("all");
+        JsonNode response = getAllQuestions();
+        return ResponseEntity.ok(response);
     }
 
     public ResponseEntity<Object> getRandomQuestion() {
-        JsonNode questions = getQuestionByCategory("all");
+        JsonNode questions = getAllQuestions();
         int totalQuestions = questions.get("num_total").asInt();
         int randomIndex = (int) (Math.random() * totalQuestions);
         String randomQueston = questions.get("stat_status_pairs").get(randomIndex).get("stat")
@@ -74,9 +76,7 @@ public class LeetcodeService {
                     },
                 }
                 """;
-
-        HashMap<String, String> variables = new HashMap<>();
-        variables.put("titleSlug", name);
+        JSONObject variables = new JSONObject("{\"titleSlug\":\"" + name + "\"}");
         GraphQlQuery graphQlQuery = new GraphQlQuery(query, variables);
 
         HttpPost request = new HttpPost(GRAPHQL_API);
@@ -92,12 +92,8 @@ public class LeetcodeService {
         }
     }
 
-    private JsonNode getQuestionByCategory(String category) {
-        if (!isValidCategory(category)) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid Category");
-        }
-
-        String url = String.format(PROBLEM_API, category);
+    private JsonNode getAllQuestions() {
+        String url = String.format(PROBLEM_API, "all");
         HttpGet request = new HttpGet(url);
 
         try (CloseableHttpResponse response = HttpRequestUtils.makeHttpRequest(request, client)) {
@@ -109,10 +105,84 @@ public class LeetcodeService {
         }
     }
 
-    // TOOD:: add difficulty and category
-    public ResponseEntity<Object> getQuestionsByCategory(String category) {
-        JsonNode json = getQuestionByCategory(category);
-        return ResponseEntity.ok(json);
+    public ResponseEntity<Object> getQuestionsByCategory(String category, String difficulty) {
+        category = category.toLowerCase();
+        difficulty = difficulty.toUpperCase();
+
+        if (!isValidCategory(category)) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid category");
+        }
+
+        if (!isValidDifficulty(difficulty)) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid difficulty");
+        }
+
+        String query = """
+                query problemsetQuestionList($categorySlug: String, $filters: QuestionListFilterInput) {
+                    problemsetQuestionList: questionList(
+                    categorySlug: $categorySlug
+                    filters: $filters
+                    ) {
+                    total: totalNum
+                    questions: data {
+                        acRate
+                        difficulty
+                        freqBar
+                        frontendQuestionId: questionFrontendId
+                        isFavor
+                        paidOnly: isPaidOnly
+                        status
+                        title
+                        titleSlug
+                        topicTags {
+                        name
+                        id
+                        slug
+                        }
+                        hasSolution
+                        hasVideoSolution
+                    }
+                    }
+                }
+                """;
+
+        JSONObject variables = new JSONObject();
+
+        if (category.equals("all")) {
+            category = "";
+        }
+
+        if (difficulty.equals("all")) {
+            difficulty = "";
+        }
+
+        variables.put("categorySlug", category);
+        JSONObject difficultyJson = new JSONObject();
+        difficultyJson.put("difficulty", difficulty);
+        variables.put("filters", difficultyJson);
+
+        GraphQlQuery graphQlQuery = new GraphQlQuery(query, variables);
+
+        HttpPost request = new HttpPost(GRAPHQL_API);
+        StringEntity body = graphQlQuery.getEntity();
+        request.setEntity(body);
+
+        try (CloseableHttpResponse response = HttpRequestUtils.makeHttpRequest(request, client)) {
+            JsonNode json = HttpRequestUtils.getJsonFromBody(response);
+            return ResponseEntity.ok(json);
+        } catch (IOException e) {
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR,
+                    "Internal Server Error " + e.getMessage());
+        }
+    }
+
+    private boolean isValidDifficulty(String difficulty) {
+        for (String dif : DIFFICULTIES) {
+            if (dif.equals(difficulty)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     public ResponseEntity<Object> submit(String name, SubmissionBody submissionBody) {

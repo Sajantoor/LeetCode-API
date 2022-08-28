@@ -3,17 +3,18 @@ package com.leetcode.leetcodeapi.utilities;
 import java.util.Map;
 
 import org.apache.http.entity.StringEntity;
+import org.json.JSONObject;
 import org.apache.http.entity.ContentType;
 
 public class GraphQlQuery {
     private String query;
-    private Map<String, String> variables;
+    private JSONObject variables;
 
     public GraphQlQuery(String query) {
         this.query = query;
     }
 
-    public GraphQlQuery(String query, Map<String, String> variables) {
+    public GraphQlQuery(String query, JSONObject variables) {
         this.query = query;
         this.variables = variables;
     }
@@ -26,11 +27,11 @@ public class GraphQlQuery {
         this.query = query;
     }
 
-    public Map<String, String> getVariables() {
+    public JSONObject getVariables() {
         return variables;
     }
 
-    public void setVariables(Map<String, String> variables) {
+    public void setVariables(JSONObject variables) {
         this.variables = variables;
     }
 
@@ -42,18 +43,9 @@ public class GraphQlQuery {
             return String.format("{\"query\": \"%s\"}", query);
         }
 
-        StringBuilder variables = new StringBuilder();
+        String variablesString = variables.toString().replace("\n", "\\n");
 
-        // TODO: Probably a better way to do this
-        for (Map.Entry<String, String> variable : this.variables.entrySet()) {
-            variables.append(String.format("\"%s\": \"%s\"", variable.getKey(), variable.getValue()));
-            // append comma if not last entry in map
-            if (variable.getKey() != this.variables.keySet().toArray()[this.variables.keySet().size() - 1]) {
-                variables.append(", ");
-            }
-        }
-
-        return String.format("{\n \"query\": \"%s\",\n  \"variables\": {\n %s \n}\n}", query, variables);
+        return String.format("{\n \"query\": \"%s\",\n  \"variables\": %s \n}", query, variablesString);
     }
 
     public StringEntity getEntity() {
