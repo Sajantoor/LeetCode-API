@@ -4,6 +4,8 @@ Wraps common LeetCode APIs in one place such as submitting, get questions by cat
 
 ## Usage
 
+Host: https://leetcode-361923.wl.r.appspot.com/
+
 -   See [swagger.json](swagger.json)
 -   [Swagger UI](https://petstore.swagger.io/?_ga=2.166651710.1040648702.1662666555-1845892988.1661718828)
 
