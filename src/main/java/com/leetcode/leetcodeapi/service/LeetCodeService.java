@@ -26,7 +26,7 @@ import org.apache.http.client.config.RequestConfig;
 import java.io.IOException;
 
 @Service
-public class LeetcodeService {
+public class LeetCodeService {
     private final String PROBLEM_API = "https://leetcode.com/api/problems/%s/";
     private final String GRAPHQL_API = "https://leetcode.com/graphql";
     // %s is the problem name
@@ -36,11 +36,10 @@ public class LeetcodeService {
     // TODO: include difficulty and category
     private final String[] CATEGORIES = { "all", "algorithms", "database", "shell", "concurrency" };
     private final String[] DIFFICULTIES = { "ALL", "EASY", "MEDIUM", "HARD" };
-    private final int MAX_POLL_COUNT = 10;
 
-    private CloseableHttpClient client;
+    private final CloseableHttpClient client;
 
-    public LeetcodeService() {
+    public LeetCodeService() {
         client = HttpClients.custom()
                 .setDefaultRequestConfig(RequestConfig.custom()
                         .setCookieSpec(CookieSpecs.STANDARD).build())
@@ -56,9 +55,9 @@ public class LeetcodeService {
         JsonNode questions = getAllQuestions();
         int totalQuestions = questions.get("num_total").asInt();
         int randomIndex = (int) (Math.random() * totalQuestions);
-        String randomQueston = questions.get("stat_status_pairs").get(randomIndex).get("stat")
+        String randomQuestion = questions.get("stat_status_pairs").get(randomIndex).get("stat")
                 .get("question__title_slug").asText();
-        return getQuestionByName(randomQueston);
+        return getQuestionByName(randomQuestion);
     }
 
     public ResponseEntity<Object> getQuestionByName(String name) {
@@ -97,8 +96,7 @@ public class LeetcodeService {
         HttpGet request = new HttpGet(url);
 
         try (CloseableHttpResponse response = HttpRequestUtils.makeHttpRequest(request, client)) {
-            JsonNode json = HttpRequestUtils.getJsonFromBody(response);
-            return json;
+            return HttpRequestUtils.getJsonFromBody(response);
         } catch (IOException e) {
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR,
                     "Internal Server Error " + e.getMessage());
@@ -152,7 +150,7 @@ public class LeetcodeService {
             category = "";
         }
 
-        if (difficulty.equals("all")) {
+        if (difficulty.equals("ALL")) {
             difficulty = "";
         }
 
@@ -190,7 +188,7 @@ public class LeetcodeService {
         HttpPost request = new HttpPost(url);
 
         // Convert submissionBody to json string
-        String submissionString = "";
+        String submissionString;
 
         try {
             submissionString = HttpRequestUtils.convertModelToJsonString(submissionBody);
@@ -218,13 +216,13 @@ public class LeetcodeService {
         authenticateRequest(request);
 
         // Need to poll the submission status and then return the submission details
-        boolean result = false;
         int count = 0;
 
-        while (!result && count < MAX_POLL_COUNT) {
+        final int MAX_POLL_COUNT = 10;
+        while (count < MAX_POLL_COUNT) {
             try (CloseableHttpResponse response = HttpRequestUtils.makeHttpRequest(request, client)) {
                 JsonNode json = HttpRequestUtils.getJsonFromBody(response);
-                if (json.get("state").asText() == "PENDING") {
+                if (json.get("state").asText().equals("PENDING")) {
                     Thread.sleep(1000);
                 } else {
                     return ResponseEntity.ok(json);
@@ -237,7 +235,7 @@ public class LeetcodeService {
         }
 
         // TODO: Add better message for user
-        return new ResponseEntity<Object>(HttpStatus.OK);
+        return new ResponseEntity(HttpStatus.OK);
     }
 
     private void authenticateRequest(HttpRequestBase request) {
