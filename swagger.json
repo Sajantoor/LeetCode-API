@@ -1,0 +1,328 @@
+{
+  "swagger" : "2.0",
+  "info" : {
+    "description" : "Api Documentation",
+    "version" : "1.0",
+    "title" : "Api Documentation",
+    "termsOfService" : "urn:tos",
+    "contact" : { },
+    "license" : {
+      "name" : "Apache 2.0",
+      "url" : "http://www.apache.org/licenses/LICENSE-2.0"
+    }
+  },
+  "host" : "localhost",
+  "basePath" : "/",
+  "tags" : [ {
+    "name" : "health-controller",
+    "description" : "Health Controller"
+  }, {
+    "name" : "leet-code-controller",
+    "description" : "Leet Code Controller"
+  } ],
+  "paths" : {
+    "/api/v1/health" : {
+      "get" : {
+        "tags" : [ "health-controller" ],
+        "summary" : "health",
+        "operationId" : "healthUsingGET",
+        "produces" : [ "*/*" ],
+        "responses" : {
+          "200" : {
+            "description" : "Health check",
+            "schema" : {
+              "type" : "string"
+            }
+          },
+          "401" : {
+            "description" : "Unauthorized"
+          },
+          "403" : {
+            "description" : "Forbidden"
+          },
+          "404" : {
+            "description" : "Not Found"
+          }
+        }
+      }
+    },
+    "/api/v1/leetcode/questions" : {
+      "get" : {
+        "tags" : [ "leet-code-controller" ],
+        "summary" : "getQuestions",
+        "operationId" : "getQuestionsUsingGET",
+        "produces" : [ "*/*" ],
+        "responses" : {
+          "200" : {
+            "description" : "Get all LeetCode questions",
+            "schema" : {
+              "type" : "object"
+            }
+          },
+          "401" : {
+            "description" : "Unauthorized"
+          },
+          "403" : {
+            "description" : "Forbidden"
+          },
+          "404" : {
+            "description" : "Not Found"
+          }
+        }
+      }
+    },
+    "/api/v1/leetcode/questions/category/{category}" : {
+      "get" : {
+        "tags" : [ "leet-code-controller" ],
+        "summary" : "getQuestionByCategory",
+        "operationId" : "getQuestionByCategoryUsingGET",
+        "produces" : [ "*/*" ],
+        "parameters" : [ {
+          "name" : "category",
+          "in" : "path",
+          "description" : "category",
+          "required" : true,
+          "type" : "string"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "Get LeetCode question by category",
+            "schema" : {
+              "type" : "object"
+            }
+          },
+          "401" : {
+            "description" : "Unauthorized"
+          },
+          "403" : {
+            "description" : "Forbidden"
+          },
+          "404" : {
+            "description" : "Not Found"
+          }
+        }
+      }
+    },
+    "/api/v1/leetcode/questions/category/{category}/difficulty/{difficulty}" : {
+      "get" : {
+        "tags" : [ "leet-code-controller" ],
+        "summary" : "getQuestionByCategoryAndDifficulty",
+        "operationId" : "getQuestionByCategoryAndDifficultyUsingGET",
+        "produces" : [ "*/*" ],
+        "parameters" : [ {
+          "name" : "category",
+          "in" : "path",
+          "description" : "category",
+          "required" : true,
+          "type" : "string"
+        }, {
+          "name" : "difficulty",
+          "in" : "path",
+          "description" : "difficulty",
+          "required" : true,
+          "type" : "string"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "Get LeetCode question by category and difficulty",
+            "schema" : {
+              "type" : "object"
+            }
+          },
+          "401" : {
+            "description" : "Unauthorized"
+          },
+          "403" : {
+            "description" : "Forbidden"
+          },
+          "404" : {
+            "description" : "Not Found"
+          }
+        }
+      }
+    },
+    "/api/v1/leetcode/questions/difficulty/{difficulty}" : {
+      "get" : {
+        "tags" : [ "leet-code-controller" ],
+        "summary" : "getQuestionByDifficulty",
+        "operationId" : "getQuestionByDifficultyUsingGET",
+        "produces" : [ "*/*" ],
+        "parameters" : [ {
+          "name" : "difficulty",
+          "in" : "path",
+          "description" : "difficulty",
+          "required" : true,
+          "type" : "string"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "Get LeetCode question by difficulty",
+            "schema" : {
+              "type" : "object"
+            }
+          },
+          "401" : {
+            "description" : "Unauthorized"
+          },
+          "403" : {
+            "description" : "Forbidden"
+          },
+          "404" : {
+            "description" : "Not Found"
+          }
+        }
+      }
+    },
+    "/api/v1/leetcode/questions/random" : {
+      "get" : {
+        "tags" : [ "leet-code-controller" ],
+        "summary" : "getRandomQuestion",
+        "operationId" : "getRandomQuestionUsingGET",
+        "produces" : [ "*/*" ],
+        "responses" : {
+          "200" : {
+            "description" : "Get random LeetCode question",
+            "schema" : {
+              "type" : "object"
+            }
+          },
+          "401" : {
+            "description" : "Unauthorized"
+          },
+          "403" : {
+            "description" : "Forbidden"
+          },
+          "404" : {
+            "description" : "Not Found"
+          }
+        }
+      }
+    },
+    "/api/v1/leetcode/questions/submissions/{id}" : {
+      "get" : {
+        "tags" : [ "leet-code-controller" ],
+        "summary" : "submit",
+        "operationId" : "submitUsingGET",
+        "produces" : [ "*/*" ],
+        "parameters" : [ {
+          "name" : "id",
+          "in" : "path",
+          "description" : "id",
+          "required" : true,
+          "type" : "string"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "Get LeetCode question submission details",
+            "schema" : {
+              "type" : "object"
+            }
+          },
+          "401" : {
+            "description" : "Unauthorized"
+          },
+          "403" : {
+            "description" : "Forbidden"
+          },
+          "404" : {
+            "description" : "Not Found"
+          }
+        }
+      }
+    },
+    "/api/v1/leetcode/questions/{name}" : {
+      "get" : {
+        "tags" : [ "leet-code-controller" ],
+        "summary" : "getQuestionById",
+        "operationId" : "getQuestionByIdUsingGET",
+        "produces" : [ "*/*" ],
+        "parameters" : [ {
+          "name" : "name",
+          "in" : "path",
+          "description" : "name",
+          "required" : true,
+          "type" : "string"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "Get LeetCode question by name",
+            "schema" : {
+              "type" : "object"
+            }
+          },
+          "401" : {
+            "description" : "Unauthorized"
+          },
+          "403" : {
+            "description" : "Forbidden"
+          },
+          "404" : {
+            "description" : "Not Found"
+          }
+        }
+      }
+    },
+    "/api/v1/leetcode/questions/{name}/submit" : {
+      "post" : {
+        "tags" : [ "leet-code-controller" ],
+        "summary" : "submit",
+        "operationId" : "submitUsingPOST",
+        "consumes" : [ "application/json" ],
+        "produces" : [ "*/*" ],
+        "parameters" : [ {
+          "name" : "name",
+          "in" : "path",
+          "description" : "name",
+          "required" : true,
+          "type" : "string"
+        }, {
+          "in" : "body",
+          "name" : "submissionBody",
+          "description" : "submissionBody",
+          "required" : true,
+          "schema" : {
+            "$ref" : "#/definitions/SubmissionBody"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "Submit LeetCode question answer",
+            "schema" : {
+              "type" : "object"
+            }
+          },
+          "201" : {
+            "description" : "Created"
+          },
+          "401" : {
+            "description" : "Unauthorized"
+          },
+          "403" : {
+            "description" : "Forbidden"
+          },
+          "404" : {
+            "description" : "Not Found"
+          }
+        }
+      }
+    }
+  },
+  "definitions" : {
+    "SubmissionBody" : {
+      "type" : "object",
+      "properties" : {
+        "lang" : {
+          "type" : "string"
+        },
+        "question_id" : {
+          "type" : "integer",
+          "format" : "int32"
+        },
+        "typed_code" : {
+          "type" : "string"
+        }
+      },
+      "title" : "SubmissionBody"
+    }
+  }
+}

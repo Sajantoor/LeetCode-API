@@ -10,59 +10,74 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import com.leetcode.leetcodeapi.models.SubmissionBody;
-import com.leetcode.leetcodeapi.service.LeetcodeService;
+import com.leetcode.leetcodeapi.service.LeetCodeService;
+
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
 
 @Controller
 @RequestMapping("/api/v1/leetcode")
-public class LeetcodeController {
+public class LeetCodeController {
 
     @Autowired
-    private LeetcodeService leetcodeService;
+    private LeetCodeService leetCodeService;
 
-    // GET Leetcode questions
     @GetMapping("/questions")
+    @ApiResponse(responseCode = "200", description = "Get all LeetCode questions", content = {
+            @Content(mediaType = "application/json") })
     public ResponseEntity<Object> getQuestions() {
-        return leetcodeService.getQuestions();
+        return leetCodeService.getQuestions();
     }
 
-    // GET Leetcode question by name
     @GetMapping("/questions/{name}")
+    @ApiResponse(responseCode = "200", description = "Get LeetCode question by name", content = {
+            @Content(mediaType = "application/json") })
     public ResponseEntity<Object> getQuestionById(@PathVariable String name) {
-        return leetcodeService.getQuestionByName(name);
+        return leetCodeService.getQuestionByName(name);
     }
 
-    // GET random Leetcode question
     @GetMapping("/questions/random")
+    @ApiResponse(responseCode = "200", description = "Get random LeetCode question", content = {
+            @Content(mediaType = "application/json") })
     public ResponseEntity<Object> getRandomQuestion() {
-        return leetcodeService.getRandomQuestion();
-    }
-
-    // GET Leetcode Question by category
-    @GetMapping("/questions/category/{category}/difficulty/{difficulty}")
-    public ResponseEntity<Object> getQuestionByCategoryAndDifficulty(@PathVariable String category,
-            @PathVariable String difficulty) {
-        return leetcodeService.getQuestionsByCategory(category, difficulty);
+        return leetCodeService.getRandomQuestion();
     }
 
     @GetMapping("/questions/category/{category}")
+    @ApiResponse(responseCode = "200", description = "Get LeetCode question by category", content = {
+            @Content(mediaType = "application/json") })
     public ResponseEntity<Object> getQuestionByCategory(@PathVariable String category) {
-        return leetcodeService.getQuestionsByCategory(category, "all");
+        return leetCodeService.getQuestionsByCategory(category, "all");
     }
 
     @GetMapping("/questions/difficulty/{difficulty}")
+    @ApiResponse(responseCode = "200", description = "Get LeetCode question by difficulty", content = {
+            @Content(mediaType = "application/json") })
     public ResponseEntity<Object> getQuestionByDifficulty(@PathVariable String difficulty) {
-        return leetcodeService.getQuestionsByCategory("all", difficulty);
+        return leetCodeService.getQuestionsByCategory("all", difficulty);
     }
 
-    // Submit leetcode question answer
+    @GetMapping("/questions/category/{category}/difficulty/{difficulty}")
+    @ApiResponse(responseCode = "200", description = "Get LeetCode question by category and difficulty", content = {
+            @Content(mediaType = "application/json") })
+    public ResponseEntity<Object> getQuestionByCategoryAndDifficulty(@PathVariable String category,
+            @PathVariable String difficulty) {
+        return leetCodeService.getQuestionsByCategory(category, difficulty);
+    }
+
     @PostMapping("/questions/{name}/submit")
+    @io.swagger.v3.oas.annotations.parameters.RequestBody(content = {
+            @Content(mediaType = "application/json", schema = @Schema(implementation = SubmissionBody.class)) })
+    @ApiResponse(responseCode = "200", description = "Submit LeetCode question answer")
     public ResponseEntity<Object> submit(@PathVariable String name, @RequestBody SubmissionBody submissionBody) {
-        return leetcodeService.submit(name, submissionBody);
+        return leetCodeService.submit(name, submissionBody);
     }
 
-    // Get leetcode question submission details
     @GetMapping("/questions/submissions/{id}")
+    @ApiResponse(responseCode = "200", description = "Get LeetCode question submission details", content = {
+            @Content(mediaType = "application/json") })
     public ResponseEntity<Object> submit(@PathVariable String id) {
-        return leetcodeService.getSubmissions(id);
+        return leetCodeService.getSubmissions(id);
     }
 }
