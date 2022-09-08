@@ -1,5 +1,6 @@
 package com.leetcode.leetcodeapi.models;
 
+
 public class SubmissionBody {
     private String lang;
     private String typed_code;
@@ -11,7 +12,6 @@ public class SubmissionBody {
         this.question_id = question_id;
     }
 
-    // getters and setters
     public String getLang() {
         return lang;
     }

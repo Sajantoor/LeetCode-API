@@ -1,7 +1,5 @@
 package com.leetcode.leetcodeapi.utilities;
 
-import java.util.Map;
-
 import org.apache.http.entity.StringEntity;
 import org.json.JSONObject;
 import org.apache.http.entity.ContentType;

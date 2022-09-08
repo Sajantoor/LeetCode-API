@@ -17,9 +17,10 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 public class HttpRequestUtils {
     /**
      * 
-     * @param httpRequest
-     * @return
-     * @throws ResponseStatusException
+     * @param httpRequest HttpRequest to make
+     * @param client CloseableHttpClient used to make the HttpRequest
+     * @return Response from the request
+     * @throws ResponseStatusException if statusCode of the response is not 200 with the status and reason
      */
     public static CloseableHttpResponse makeHttpRequest(HttpRequestBase httpRequest, CloseableHttpClient client)
             throws ResponseStatusException {
@@ -45,8 +46,9 @@ public class HttpRequestUtils {
 
     /**
      * 
-     * @param response
-     * @return
+     * @param response The response from a CloseableHttpRequest, this should be in JSON format
+     * @return The response body as a JsonNode
+     * @throws IOException
      */
     public static JsonNode getJsonFromBody(CloseableHttpResponse response) throws IOException {
         ObjectMapper mapper = new ObjectMapper();
@@ -55,6 +57,12 @@ public class HttpRequestUtils {
         return mapper.readTree(body);
     }
 
+    /**
+     *
+     * @param model The object model to convert to a json string
+     * @return A json string based off the model
+     * @throws JsonProcessingException
+     */
     public static String convertModelToJsonString(Object model) throws JsonProcessingException {
         ObjectMapper mapper = new ObjectMapper();
         return mapper.writeValueAsString(model);
