@@ -7,12 +7,12 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 @Controller
-@RequestMapping("/api/v1/health")
+@RequestMapping("/health")
 public class HealthController {
 
     @GetMapping
     @ApiResponse(responseCode = "200", description = "Health check")
     public ResponseEntity<String> health() {
-        return ResponseEntity.ok("Up");
+        return ResponseEntity.ok("UP");
     }
 }
