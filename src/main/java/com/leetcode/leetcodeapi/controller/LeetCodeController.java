@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import com.leetcode.leetcodeapi.models.SubmissionBody;
@@ -70,14 +71,21 @@ public class LeetCodeController {
     @io.swagger.v3.oas.annotations.parameters.RequestBody(content = {
             @Content(mediaType = "application/json", schema = @Schema(implementation = SubmissionBody.class)) })
     @ApiResponse(responseCode = "200", description = "Submit LeetCode question answer")
-    public ResponseEntity<Object> submit(@PathVariable String name, @RequestBody SubmissionBody submissionBody) {
-        return leetCodeService.submit(name, submissionBody);
+    public ResponseEntity<Object> submit(
+            @PathVariable String name,
+            @RequestBody SubmissionBody submissionBody,
+            @RequestHeader("Session") String leetCodeSession,
+            @RequestHeader("X-CSRF-Token") String csrfToken) {
+        return leetCodeService.submit(name, submissionBody, leetCodeSession, csrfToken);
     }
 
     @GetMapping("/questions/submissions/{id}")
     @ApiResponse(responseCode = "200", description = "Get LeetCode question submission details", content = {
             @Content(mediaType = "application/json") })
-    public ResponseEntity<Object> submit(@PathVariable String id) {
-        return leetCodeService.getSubmissions(id);
+    public ResponseEntity<Object> submit(
+            @PathVariable String id,
+            @RequestHeader("Session") String leetCodeSession,
+            @RequestHeader("X-CSRF-Token") String csrfToken) {
+        return leetCodeService.getSubmissions(id, leetCodeSession, csrfToken);
     }
 }

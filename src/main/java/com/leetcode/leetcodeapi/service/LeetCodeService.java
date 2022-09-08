@@ -183,7 +183,8 @@ public class LeetCodeService {
         return false;
     }
 
-    public ResponseEntity<Object> submit(String name, SubmissionBody submissionBody) {
+    public ResponseEntity<Object> submit(String name, SubmissionBody submissionBody, String leetCodeSession,
+            String csrfToken) {
         String url = String.format(SUBMISSION_API, name);
         HttpPost request = new HttpPost(url);
 
@@ -199,7 +200,7 @@ public class LeetCodeService {
 
         StringEntity body = new StringEntity(submissionString, ContentType.APPLICATION_JSON);
         request.setEntity(body);
-        authenticateRequest(request);
+        authenticateRequest(request, leetCodeSession, csrfToken);
 
         try (CloseableHttpResponse response = HttpRequestUtils.makeHttpRequest(request, client)) {
             JsonNode json = HttpRequestUtils.getJsonFromBody(response);
@@ -210,10 +211,10 @@ public class LeetCodeService {
         }
     }
 
-    public ResponseEntity<Object> getSubmissions(String id) {
+    public ResponseEntity<Object> getSubmissions(String id, String leetCodeSession, String csrfToken) {
         String url = String.format(SUBMISSION_DETAILS_API, id);
         HttpGet request = new HttpGet(url);
-        authenticateRequest(request);
+        authenticateRequest(request, leetCodeSession, csrfToken);
 
         // Need to poll the submission status and then return the submission details
         int count = 0;
@@ -234,15 +235,11 @@ public class LeetCodeService {
             count++;
         }
 
-        // TODO: Add better message for user
-        return new ResponseEntity(HttpStatus.OK);
+        throw new ResponseStatusException(HttpStatus.REQUEST_TIMEOUT, "Could not get submission details");
     }
 
-    private void authenticateRequest(HttpRequestBase request) {
-        String csrfToken = System.getenv("LEETCODE_CSRF_TOKEN");
-        String leetcodeSession = System.getenv("LEETCODE_SESSION");
+    private void authenticateRequest(HttpRequestBase request, String leetcodeSession, String csrfToken) {
         String cookie = "LEETCODE_SESSION=" + leetcodeSession + "; csrftoken=" + csrfToken;
-
         request.addHeader("Cookie", cookie);
         request.addHeader("x-csrftoken", csrfToken);
         request.addHeader("Referer", request.getURI().toString());

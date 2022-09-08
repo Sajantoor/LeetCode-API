@@ -1,10 +1,13 @@
 package com.leetcode.leetcodeapi.models;
 
-
 public class SubmissionBody {
     private String lang;
     private String typed_code;
     private int question_id;
+
+    public SubmissionBody() {
+
+    }
 
     public SubmissionBody(String lang, String typed_code, int question_id) {
         this.lang = lang;
