@@ -27,3 +27,7 @@ replay_pid*
 # IDE 
 /.idea
 /.vscode
+
+# Other files
+*.iml
+*.env
