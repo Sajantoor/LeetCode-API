@@ -11,7 +11,7 @@
       "url" : "http://www.apache.org/licenses/LICENSE-2.0"
     }
   },
-  "host" : "https://leetcode-361923.wl.r.appspot.com/",
+  "host" : "leetcode-361923.wl.r.appspot.com",
   "basePath" : "/",
   "tags" : [ {
     "name" : "health-controller",
@@ -55,9 +55,11 @@
         "parameters" : [ {
           "name" : "category",
           "in" : "path",
-          "description" : "category",
+          "description" : "category of the questions",
           "required" : true,
-          "type" : "string"
+          "type" : "string",
+          "x-example" : "array",
+          "enum" : [ "algorithms", "all", "concurrency", "database", "shell" ]
         } ],
         "responses" : {
           "200" : {
@@ -87,15 +89,19 @@
         "parameters" : [ {
           "name" : "category",
           "in" : "path",
-          "description" : "category",
+          "description" : "category of the questions",
           "required" : true,
-          "type" : "string"
+          "type" : "string",
+          "x-example" : "array",
+          "enum" : [ "algorithms", "all", "concurrency", "database", "shell" ]
         }, {
           "name" : "difficulty",
           "in" : "path",
-          "description" : "difficulty",
+          "description" : "difficulty of the questions",
           "required" : true,
-          "type" : "string"
+          "type" : "string",
+          "x-example" : "hard",
+          "enum" : [ "all", "easy", "hard", "medium" ]
         } ],
         "responses" : {
           "200" : {
@@ -125,9 +131,11 @@
         "parameters" : [ {
           "name" : "difficulty",
           "in" : "path",
-          "description" : "difficulty",
+          "description" : "difficulty of the questions",
           "required" : true,
-          "type" : "string"
+          "type" : "string",
+          "x-example" : "hard",
+          "enum" : [ "all", "easy", "hard", "medium" ]
         } ],
         "responses" : {
           "200" : {
@@ -226,9 +234,10 @@
         "parameters" : [ {
           "name" : "name",
           "in" : "path",
-          "description" : "name",
+          "description" : "name / title-slug of the question",
           "required" : true,
-          "type" : "string"
+          "type" : "string",
+          "x-example" : "two-sum"
         } ],
         "responses" : {
           "200" : {
@@ -259,13 +268,14 @@
         "parameters" : [ {
           "name" : "name",
           "in" : "path",
-          "description" : "name",
+          "description" : "name - title slug of the question name",
           "required" : true,
-          "type" : "string"
+          "type" : "string",
+          "x-example" : "two-sum"
         }, {
           "name" : "Session",
           "in" : "header",
-          "description" : "Session",
+          "description" : "LEETCODE_SESSION cookie",
           "required" : true,
           "type" : "string"
         }, {
@@ -279,7 +289,7 @@
         }, {
           "name" : "X-CSRF-Token",
           "in" : "header",
-          "description" : "X-CSRF-Token",
+          "description" : "X-CSRF-Token cookie",
           "required" : true,
           "type" : "string"
         } ],
@@ -335,14 +345,14 @@
     "SubmissionBody" : {
       "type" : "object",
       "properties" : {
-        "lang" : {
+        "lang - language" : {
           "type" : "string"
         },
-        "question_id" : {
+        "question_id - number of the question" : {
           "type" : "integer",
           "format" : "int32"
         },
-        "typed_code" : {
+        "typed code - solution code" : {
           "type" : "string"
         }
       },

@@ -1,8 +1,17 @@
 package com.leetcode.leetcodeapi.models;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
+// swagger docs
+import io.swagger.v3.oas.annotations.media.Schema;
+
+@Schema(description = "Submission body")
 public class SubmissionBody {
+    @JsonProperty("lang - language")
     private String lang;
+    @JsonProperty("typed code - solution code")
     private String typed_code;
+    @JsonProperty("question_id - number of the question")
     private int question_id;
 
     public SubmissionBody() {
