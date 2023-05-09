@@ -18,9 +18,10 @@ public class HttpRequestUtils {
     /**
      * 
      * @param httpRequest HttpRequest to make
-     * @param client CloseableHttpClient used to make the HttpRequest
+     * @param client      CloseableHttpClient used to make the HttpRequest
      * @return Response from the request
-     * @throws ResponseStatusException if statusCode of the response is not 200 with the status and reason
+     * @throws ResponseStatusException if statusCode of the response is not 200 with
+     *                                 the status and reason
      */
     public static CloseableHttpResponse makeHttpRequest(HttpRequestBase httpRequest, CloseableHttpClient client)
             throws ResponseStatusException {
@@ -46,15 +47,26 @@ public class HttpRequestUtils {
 
     /**
      * 
-     * @param response The response from a CloseableHttpRequest, this should be in JSON format
+     * @param response The response from a CloseableHttpRequest, this should be in
+     *                 JSON format
      * @return The response body as a JsonNode
      * @throws IOException
      */
     public static JsonNode getJsonFromBody(CloseableHttpResponse response) throws IOException {
-        ObjectMapper mapper = new ObjectMapper();
         HttpEntity entity = response.getEntity();
         String body = EntityUtils.toString(entity);
-        return mapper.readTree(body);
+        return getJsonFromString(body);
+    }
+
+    /**
+     * 
+     * @param json The json string to convert to a JsonNode
+     * @return The json string as a JsonNode
+     * @throws IOException
+     */
+    public static JsonNode getJsonFromString(String json) throws IOException {
+        ObjectMapper mapper = new ObjectMapper();
+        return mapper.readTree(json);
     }
 
     /**

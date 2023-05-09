@@ -15,6 +15,7 @@ import org.springframework.web.server.ResponseStatusException;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.json.JSONObject;
 import com.leetcode.leetcodeapi.models.SubmissionBody;
 import com.leetcode.leetcodeapi.utilities.GraphQlQuery;
@@ -83,7 +84,30 @@ public class LeetCodeService {
         request.setEntity(body);
 
         try (CloseableHttpResponse response = HttpRequestUtils.makeHttpRequest(request, client)) {
-            JsonNode json = HttpRequestUtils.getJsonFromBody(response);
+            JsonNode responseJson = HttpRequestUtils.getJsonFromBody(response);
+
+            // response has form {"data": {"question": { ... }}} which is not a nice format
+            // We want to return {{ ... }}
+            responseJson = responseJson.get("data").get("question");
+
+            // JsonNode is immutable, so we need to make a copy of it to a ObjectNode which
+            // is mutable
+            ObjectNode json = responseJson.deepCopy();
+
+            // stats, codeDefinition, metaData are all json strings, so we need to convert
+            // them to JSON objects
+            String stats = json.get("stats").textValue();
+            String codeDefinition = json.get("codeDefinition").textValue();
+            String metaData = json.get("metaData").textValue();
+
+            JsonNode statsJson = HttpRequestUtils.getJsonFromString(stats);
+            JsonNode codeDefinitionJson = HttpRequestUtils.getJsonFromString(codeDefinition);
+            JsonNode metaDataJson = HttpRequestUtils.getJsonFromString(metaData);
+
+            json = json.set("stats", statsJson);
+            json = json.set("codeDefinition", codeDefinitionJson);
+            json = json.set("metaData", metaDataJson);
+
             return ResponseEntity.ok(json);
         } catch (IOException e) {
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR,
