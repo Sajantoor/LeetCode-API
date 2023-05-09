@@ -179,9 +179,15 @@ public class LeetCodeService {
         }
 
         variables.put("categorySlug", category);
-        JSONObject difficultyJson = new JSONObject();
-        difficultyJson.put("difficulty", difficulty);
-        variables.put("filters", difficultyJson);
+
+        if (!difficulty.equals("")) {
+            JSONObject difficultyJson = new JSONObject();
+            difficultyJson.put("difficulty", difficulty);
+            variables.put("filters", difficultyJson);
+        } else {
+            // Set to empty object if difficulty is empty
+            variables.put("filters", new JSONObject());
+        }
 
         GraphQlQuery graphQlQuery = new GraphQlQuery(query, variables);
 
