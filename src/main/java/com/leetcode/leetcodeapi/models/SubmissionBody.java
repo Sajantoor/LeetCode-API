@@ -7,11 +7,11 @@ import io.swagger.v3.oas.annotations.media.Schema;
 
 @Schema(description = "Submission body")
 public class SubmissionBody {
-    @JsonProperty("lang - language")
+    @JsonProperty("lang")
     private String lang;
-    @JsonProperty("typed code - solution code")
+    @JsonProperty("typed_code")
     private String typed_code;
-    @JsonProperty("question_id - number of the question")
+    @JsonProperty("question_id")
     private int question_id;
 
     public SubmissionBody() {
