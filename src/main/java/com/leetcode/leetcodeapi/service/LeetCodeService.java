@@ -24,6 +24,9 @@ import com.leetcode.leetcodeapi.utilities.HttpRequestUtils;
 import org.apache.http.client.config.CookieSpecs;
 import org.apache.http.client.config.RequestConfig;
 
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
 import java.io.IOException;
 
 @Service
@@ -36,6 +39,7 @@ public class LeetCodeService {
     private final String SUBMISSION_DETAILS_API = "https://leetcode.com/submissions/detail/%s/check";
     private final String[] CATEGORIES = { "all", "algorithms", "database", "shell", "concurrency" };
     private final String[] DIFFICULTIES = { "ALL", "EASY", "MEDIUM", "HARD" };
+    private JsonNode storedQuestions = null;
 
     private final CloseableHttpClient client;
 
@@ -53,6 +57,7 @@ public class LeetCodeService {
 
     public ResponseEntity<Object> getRandomQuestion() {
         JsonNode questions = getAllQuestions();
+
         int totalQuestions = questions.get("num_total").asInt();
         int randomIndex = (int) (Math.random() * totalQuestions);
         String randomQuestion = questions.get("stat_status_pairs")
@@ -171,11 +176,58 @@ public class LeetCodeService {
     }
 
     private JsonNode getAllQuestions() {
-        String url = String.format(PROBLEM_API, "all");
-        HttpGet request = new HttpGet(url);
+        return getStoredQuestions();
 
-        try (CloseableHttpResponse response = HttpRequestUtils.makeHttpRequest(request, client)) {
-            return HttpRequestUtils.getJsonFromBody(response);
+        // this is the old method of getting questions, this no longer works due to
+        // cloudflare bot protection on this endpoint
+        /*
+         * String url = String.format(PROBLEM_API, "all");
+         * HttpGet request = new HttpGet(url);
+         * 
+         * try (CloseableHttpResponse response =
+         * HttpRequestUtils.makeHttpRequest(request, client)) {
+         * return HttpRequestUtils.getJsonFromBody(response);
+         * } catch (ResponseStatusException e) {
+         * // the response is not 200, we can open the questions.json file instead
+         * // and return the json from there
+         * return getStoredQuestions();
+         * } catch (IOException e) {
+         * throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR,
+         * "Internal Server Error " + e.getMessage());
+         * }
+         */
+
+    }
+
+    private JsonNode getStoredQuestions() {
+        if (storedQuestions != null) {
+            return storedQuestions;
+        }
+
+        File file = new File("src/main/resources/questions.json");
+
+        if (!file.exists()) {
+            return null;
+        }
+
+        String content = "";
+
+        try {
+            BufferedReader reader = new BufferedReader(new FileReader(file));
+
+            while (reader.ready()) {
+                content += reader.readLine();
+            }
+
+            reader.close();
+        } catch (IOException e) {
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR,
+                    "Internal Server Error " + e.getMessage());
+        }
+
+        try {
+            storedQuestions = HttpRequestUtils.getJsonFromString(content);
+            return storedQuestions;
         } catch (IOException e) {
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR,
                     "Internal Server Error " + e.getMessage());
